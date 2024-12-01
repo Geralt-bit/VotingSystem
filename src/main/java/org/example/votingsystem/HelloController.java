@@ -37,33 +37,30 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-        // Set up the TableView columns
         userColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName()));
         optionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOptionName()));
         countColumn.setCellValueFactory(cellData -> cellData.getValue().voteCountProperty().asObject());
 
-        // Initialize the database connection
         try {
             conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/FinalProjectDB", "postgres", "1234");
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        // Load votes from the database
         loadVotes();
     }
 
     @FXML
     public void handleRegister(ActionEvent event) {
         String username = usernameField.getText();
-        String password = passwordField.getText();  // Hash this in a real system
+        String password = passwordField.getText();
         String email = emailField.getText();
 
         try {
             String query = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = conn.prepareStatement(query)) {
                 stmt.setString(1, username);
-                stmt.setString(2, password);  // Hash this in a real system
+                stmt.setString(2, password);
                 stmt.setString(3, email);
                 stmt.executeUpdate();
             }
@@ -88,7 +85,7 @@ public class HelloController {
                 stmt.setInt(1, userId);
                 stmt.setInt(2, voteOptionId);
                 stmt.executeUpdate();
-                loadVotes();  // Reload the votes after inserting
+                loadVotes();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -130,9 +127,8 @@ public class HelloController {
             return;
         }
 
-        voteList.clear();  // Clear existing data
+        voteList.clear();
         try {
-            // Modify the query to get user details as well
             String query = "SELECT u.username, vo.id, vo.option_name, COUNT(v.id) as vote_count " +
                     "FROM votes v " +
                     "JOIN users u ON v.user_id = u.id " +
@@ -147,8 +143,7 @@ public class HelloController {
                     int voteCount = rs.getInt("vote_count");
                     int optionId = rs.getInt("id");
 
-                    // Create a Vote object with the user and vote option
-                    User user = new User(username);  // Assume User constructor only needs username
+                    User user = new User(username);
                     VoteOption voteOption = new VoteOption(optionId, optionName);
                     Vote vote = new Vote(user, voteOption, voteCount);
                     voteList.add(vote);
@@ -157,7 +152,7 @@ public class HelloController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        tableView.setItems(voteList);  // Set the table items to the vote list
+        tableView.setItems(voteList);
     }
 
     private void showAlert(String title, String message) {
