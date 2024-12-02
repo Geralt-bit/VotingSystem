@@ -33,22 +33,22 @@ public class HelloController {
 
     private ObservableList<Vote> voteList = FXCollections.observableArrayList();
 
-    private Connection conn;
+        private Connection conn;
 
-    @FXML
-    public void initialize() {
-        userColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName()));
-        optionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOptionName()));
-        countColumn.setCellValueFactory(cellData -> cellData.getValue().voteCountProperty().asObject());
+        @FXML
+        public void initialize() {
+            userColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getUserName()));
+            optionColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getOptionName()));
+            countColumn.setCellValueFactory(cellData -> cellData.getValue().voteCountProperty().asObject());
 
-        try {
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/FinalProjectDB", "postgres", "1234");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try {
+                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/FinalProjectDB", "postgres", "1234");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            loadVotes();
         }
-
-        loadVotes();
-    }
 
     @FXML
     public void handleRegister(ActionEvent event) {
